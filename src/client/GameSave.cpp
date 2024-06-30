@@ -2607,6 +2607,18 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	header[10] = finalDataLen >> 16;
 	header[11] = finalDataLen >> 24;
 
+	if constexpr (DEBUG)
+	{
+    		for (int i = 0; i < 12; ++i)
+    		{
+        		printf("header[%d]: %d\n", i, header[i]);
+    		}
+
+    		printf("Final data verification:\n");
+    		printf("Block Size X: %d\n", blockS.X);
+    		printf("Block Size Y: %d\n", blockS.Y);
+    		printf("Effective Version: %d\n", effectiveVersion[0]);
+	}
 	// move header to front
 	std::rotate(outputData.begin(), outputData.begin() + compressedSize, outputData.end());
 
