@@ -471,7 +471,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	{
 		std::vector<char> bsonData;
-		switch (auto status = BZ2WDecompress(bsonData, (char *)(inputData + 12), inputDataLen - 12, toAlloc))
+		switch (auto status = BZ2WDecompress(bsonData, (char *)(inputData + 14), inputDataLen - 14, toAlloc))
 		{
 		case BZ2WDecompressOk: break;
 		case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -1344,7 +1344,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
 
 	std::vector<char> bsonData;
-	switch (auto status = BZ2WDecompress(bsonData, (char *)(saveData + 12), dataLength - 12, size))
+	switch (auto status = BZ2WDecompress(bsonData, (char *)(saveData + 14), dataLength - 14, size))
 	{
 	case BZ2WDecompressOk: break;
 	case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -2583,7 +2583,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
     		printf("outputData size before resize: %zu\n", outputData.size());
 	}
 	
-	outputData.resize(compressedSize + 12);
+	outputData.resize(compressedSize + 14);
 	
 	
 	if constexpr (DEBUG)
@@ -2600,16 +2600,18 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	header[3] = '1';
 	header[4] = effectiveVersion[0];
 	header[5] = CELL;
-	header[6] = blockS.X;
-	header[7] = blockS.Y;
-	header[8] = finalDataLen;
-	header[9] = finalDataLen >> 8;
-	header[10] = finalDataLen >> 16;
-	header[11] = finalDataLen >> 24;
+	header[6] = blockS.X & 0xFF;       // Lower byte of blockS.X
+	header[7] = (blockS.X >> 8) & 0xFF; // Upper byte of blockS.X
+	header[8] = blockS.Y & 0xFF;       // Lower byte of blockS.Y
+	header[9] = (blockS.Y >> 8) & 0xFF; // Upper byte of blockS.Y
+	header[10] = finalDataLen;
+	header[11] = finalDataLen >> 8;
+	header[12] = finalDataLen >> 16;
+	header[13] = finalDataLen >> 24;
 
 	if constexpr (DEBUG)
 	{
-    		for (int i = 0; i < 12; ++i)
+    		for (int i = 0; i < 14; ++i)
     		{
         		printf("header[%d]: %d\n", i, header[i]);
     		}
