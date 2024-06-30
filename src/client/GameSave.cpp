@@ -2585,7 +2585,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	
 	outputData.resize(compressedSize + 12);
 	
-	{
+	
 	if constexpr (DEBUG)
 	{
     		printf("outputData size after resize: %zu\n", outputData.size());
