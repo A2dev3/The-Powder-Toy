@@ -2578,9 +2578,20 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 
 	if constexpr (DEBUG)
 	{
-		printf("compressed data: %d\n", compressedSize);
+		printf("final data length: %d\n", finalDataLen);
+    		printf("compressed data: %d\n", compressedSize);
+    		printf("outputData size before resize: %zu\n", outputData.size());
 	}
+	
 	outputData.resize(compressedSize + 12);
+	
+	{
+	if constexpr (DEBUG)
+	{
+    		printf("outputData size after resize: %zu\n", outputData.size());
+	}
+	
+	
 
 	auto header = (unsigned char *)&outputData[compressedSize];
 	header[0] = 'O';
